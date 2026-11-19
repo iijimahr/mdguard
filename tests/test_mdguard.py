@@ -104,31 +104,75 @@ class CliTests(unittest.TestCase):
     def test_links_ignore_missing_directories_and_closed_records(self):
         self.git("init", "-q")
         self.write(".gitignore", "/ignored/\n")
-        self.write("docs/README.md", "[ignored](../ignored) [nested](../ignored/file.md) [anchor](#local)\n")
-        self.write("note/issues/done/archive.md", "[missing](gone.md)\n")
-        self.write("log/archive.md", "[missing](gone.md)\n")
-        self.write("note/jobs/current.md", "[missing](gone.md#anchor)\n")
+        self.write("guides/README.md", "[ignored](../ignored) [nested](../ignored/file.md) [anchor](#local)\n")
+        self.write("records/closed/archive.md", "[missing](gone.md)\n")
+        self.write("records/current.md", "[missing](gone.md#anchor)\n")
+        self.git("add", ".")
+        self.write("untracked.md", "[missing](gone.md)\n")
+        self.assertEqual(self.cmd("links", ".").stdout, "records/closed/archive.md: gone.md\nrecords/current.md: gone.md\n")
+        self.write(".mdguard.toml", '[links]\npaths = ["guides/**/*.md", "records/**/*.md", "untracked.md"]\n'
+                   'exclude = ["records/closed/**/*.md"]\n')
         result = self.cmd("links", ".")
-        self.assertEqual((result.returncode, result.stdout, result.stderr), (0, "note/jobs/current.md: gone.md\n", ""))
+        self.assertEqual((result.returncode, result.stdout, result.stderr), (0, "records/current.md: gone.md\nuntracked.md: gone.md\n", ""))
 
     def test_doc_sources_sort_by_full_path(self):
-        self.write("doc/a/item.md", "[missing](gone.md)\n")
-        self.write("doc/a-.md", "[missing](gone.md)\n")
+        self.write("guides/a/item.md", "[missing](gone.md)\n")
+        self.write("guides/a-.md", "[missing](gone.md)\n")
+        self.assertEqual(self.cmd("index", ".").stdout, "")
+        self.write(".mdguard.toml", '[index]\nrules = [{base="guides", glob="**/*.md", index="nearest-readme"}]\n')
         result = self.cmd("index", ".")
         self.assertEqual(result.stdout.splitlines(), [
-            "doc/a-.md: 索引 doc/README.md が無い",
-            "doc/a/item.md: 索引 doc/README.md が無い",
+            "guides/a-.md: 索引 guides/README.md が無い",
+            "guides/a/item.md: 索引 guides/README.md が無い",
         ])
         self.assertEqual(self.cmd("links", ".").stdout.splitlines(), [
-            "doc/a-.md: gone.md", "doc/a/item.md: gone.md",
+            "guides/a-.md: gone.md", "guides/a/item.md: gone.md",
         ])
+        self.write("guides/README.md", "a-.md item.md\n")
+        self.write("guides/a/README.md")
+        self.assertEqual(self.cmd("index", ".").stdout, "guides/a/item.md: guides/a/README.md に載っていない\n")
+
+    def test_links_explicit_config_resolves_allowance_from_checked_root(self):
+        self.write("project/guides/source.md", "[external](../../assets/sample.md)\n")
+        self.write("settings/check.toml", '[links]\npaths=["guides/*.md"]\nexternal_allow="config/allow.txt"\n')
+        self.write("project/config/allow.txt", f"{self.root}/assets/ ### 1 ### Fixture\n")
+        self.assertIn("未許可", self.cmd("links", "project").stdout)
+        checked = self.cmd("links", "project", "--config", "settings/check.toml")
+        self.assertEqual((checked.returncode, checked.stdout, checked.stderr), (0, "", ""))
+
+    def test_ratchet_config_counts_matching_lines_or_matches(self):
+        self.write("guides/a.md", "TODO TODO\nTODO\n")
+        self.write("other/a.md", "TODO\n")
+        self.write("limits.txt", "lines 0\nmatches 0\n")
+        self.assertEqual(self.cmd("ratchet", ".", "limits.txt").returncode, 2)
+        self.write(".mdguard.toml", """
+[ratchet.metrics.lines]
+paths = ["guides/**/*.md", "guides/a.md"]
+pattern = 'TODO'
+[ratchet.metrics.matches]
+paths = ["guides/**/*.md"]
+pattern = 'T(OD)O'
+count = "matches"
+""")
+        checked = self.cmd("ratchet", ".", "limits.txt")
+        self.assertEqual((checked.returncode, checked.stderr), (0, ""))
+        self.assertEqual(checked.stdout.splitlines(), [
+            "lines: 2 が上限 0 を越えた",
+            "matches: 3 が上限 0 を越えた",
+        ])
+        self.write(".mdguard.toml", "[ratchet.metrics.lines]\npaths=['*.md']\npattern='['\n")
+        invalid = self.cmd("ratchet", ".", "limits.txt")
+        self.assertEqual(invalid.returncode, 2)
+        self.assertIn("ratchet.metrics.lines.pattern", invalid.stderr)
 
     def test_run_config_and_detail_limit(self):
         self.git("init", "-q")
         self.write("settings/custom.toml", '[math]\npaths = ["doc/*.md"]\n[run]\n'
-                   'name = "文書"\nexempt = "exempt.txt"\nratchet = "limits.txt"\nmath_under = "."\n')
+                   'name = "文書"\nexempt = "exempt.txt"\nratchet = "limits.txt"\nmath_under = "."\n'
+                   '[links]\npaths = ["doc/**/*.md"]\n'
+                   '[ratchet.metrics.markers]\npaths = ["doc/**/*.md"]\npattern = "TODO"\n')
         self.write("settings/exempt.txt", "doc/a.md 試験\n")
-        self.write("settings/limits.txt", "date_headings 0\nspec_long_lines 0\nline_refs 0\n")
+        self.write("settings/limits.txt", "markers 0\n")
         self.write("doc/a.md", "$x$\n")
         explicit = ("--config", "settings/custom.toml")
         checked = self.cmd(*explicit, "run", ".")
@@ -149,7 +193,9 @@ class CliTests(unittest.TestCase):
 
     def test_run_reports_index_and_ratchet_failures(self):
         self.write("doc/new.md", "## 2020-01-01\n")
-        self.write("limits.txt", "date_headings 0\nspec_long_lines 0\nline_refs 0\n")
+        self.write(".mdguard.toml", '[index]\nrules = [{base="doc", glob="**/*.md", index="nearest-readme"}]\n'
+                   '[ratchet.metrics.date_headings]\npaths = ["doc/**/*.md"]\npattern = "2020-01-01"\n')
+        self.write("limits.txt", "date_headings 0\n")
         checked = self.cmd("run", ".", "--name", "文書", "--ratchet", "limits.txt")
         self.assertEqual((checked.returncode, checked.stderr), (1, ""))
         self.assertIn("NG  文書の索引の点呼（文書）が合わない（1 件）", checked.stdout)

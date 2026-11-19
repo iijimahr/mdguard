@@ -117,30 +117,35 @@ def run(root, name, exempt, limits, under, config, top, explicit_config):
         except (OSError, ValueError) as exc:
             return [f"mdguard が落ちた: {exc}"]
 
-    findings = find(docs.index, exempt)
+    try:
+        findings, sizes = docs.index(root, config.index_rules(), exempt)
+    except (OSError, ValueError) as exc:
+        findings = [f"mdguard が落ちた: {exc}"]
     if findings:
         ng(f"文書の索引の点呼（{name}）が合わない（{len(findings)} 件）", findings,
-           f"→ 新しい doc / log は README.md の表に 1 行足すこと（載せないなら除外リスト {exempt or '/dev/null'} に理由つきで 1 行）")
+           "→ 索引に項目を追加するか、除外リストに理由を記す")
+    elif sizes:
+        summary = "・".join(f"{label} {count}" for label, count in sizes)
+        print(f"OK  文書の索引の点呼（{name}: {summary} がどれも索引に載っている）")
     else:
-        nd, nl = len(docs.doc_entries(root)), len(docs.log_entries(root))
-        print(f"OK  文書の索引の点呼（{name}: doc/ {nd}・log/ {nl} がどれも README.md に載っている）")
+        print(f"OK  文書の索引の点呼（{name}: 対象ルールなし）")
 
-    findings = find(docs.links)
+    findings = find(docs.links, config, top)
     if findings:
         ng(f"壊れた相対リンクがある（{name}: {len(findings)} 件）", findings,
-           "→ issue を done/ へ移したら、それを指すリンクも直すこと（done/ の中から外へは ../ が 1 つ増える）")
+           "→ リンク元からの相対パスとリンク先を確認する")
     else:
-        print(f"OK  動いている文書の相対リンクが全部実在する（{name} の doc / note / 開いている issue / tests / README / log/README.md）")
+        print(f"OK  文書の相対リンクの検査に合格（{name}）")
 
     if limits is not None:
         try:
-            measured = docs.counts(root)
-            findings = docs.ratchet(root, limits, measured)
+            measured = docs.counts(root, config.metrics())
+            findings = docs.ratchet(limits, measured)
         except (OSError, ValueError) as exc:
             findings = [f"mdguard が落ちた: {exc}"]
         if findings:
             ng(f"文書のラチェットを越えた（{name}）", findings,
-               f"→ 経緯・日付つきの実測は log/ か issue へ、spec は決定 1 行 + リンクに。減らしたら上限 {limits} も下げる")
+               f"→ 指標を上限以内に収め、減らしたら上限 {limits} も下げる")
         else:
             values = " ".join(f"{key} {val}" for key, val in measured.items())
             print(f"OK  文書のラチェット（{name}: {values} が上限以内。上限は {limits}）")
@@ -181,19 +186,18 @@ def main(argv=None):
         root = Path(args.root).resolve()
         if not root.is_dir():
             raise ValueError(f"根 '{args.root}' が無い")
-        if args.command == "links":
-            print_lines(docs.links(root))
-            return 0
-
         top = git_root(root)
         config = load_config(root, top, args.config)
-        if args.command == "index":
-            print_lines(docs.index(root, selected_path(args.exempt, config, "exempt")))
+        if args.command == "links":
+            print_lines(docs.links(root, config, top))
+        elif args.command == "index":
+            findings, _ = docs.index(root, config.index_rules(), selected_path(args.exempt, config, "exempt"))
+            print_lines(findings)
         elif args.command == "ratchet":
             limits = selected_path(args.limits, config, "ratchet")
             if limits is None:
                 raise ValueError("上限ファイルを指定する")
-            print_lines(docs.ratchet(root, limits))
+            print_lines(docs.ratchet(limits, docs.counts(root, config.metrics())))
         else:
             name = args.name or config.get("run", "name", str)
             if name is None:

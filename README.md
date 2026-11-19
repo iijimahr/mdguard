@@ -18,8 +18,8 @@ python3 -m venv .venv
 |---|---|
 | `mdguard math FILES…` | ファイルやディレクトリを指定して数式を検査。標準入力は `-` |
 | `mdguard math --repo [--under DIR] [--list]` | 設定した対象を検査。追跡済みと Git が無視していない未追跡の Markdown を列挙し、作業ツリーから削除済みの項目を外す |
-| `mdguard index ROOT [--exempt FILE]` | `doc/` 配下の各 Markdown 名を最も近い上位 `README.md` で確認。`log/` 直下の項目名は `log/README.md` で確認。除外表には `パス 理由` を 1 項目ずつ書く |
-| `mdguard links ROOT` | 現行文書の `](path)` や `](path#anchor)` の相対パスを確認。対象は `doc/`、`tests/`、`note/` 直下、`note/history/`・`note/issues/`・`note/jobs/` の直下、ルートの Markdown、1 段下の `README.md` と `log/README.md` |
+| `mdguard index ROOT [--exempt FILE]` | 設定した項目名が索引に載っているかを確認。除外表には `パス 理由` を 1 項目ずつ書く |
+| `mdguard links ROOT` | `](path)` や `](path#anchor)` の相対パスを確認 |
 | `mdguard ratchet ROOT LIMITS` | 文書の指標を上限と比較。設定に `run.ratchet` があれば `LIMITS` は省略可 |
 | `mdguard run ROOT [--name NAME] [--exempt FILE] [--ratchet FILE] [--math-under DIR]` | 検査ごとに `OK  ` / `NG  ` を 1 行出し、NG の下に詳細を先頭 10 行まで表示。NG があれば終了コード 1 |
 | `mdguard selftest` | 種の木と記録した数式例で検査器を確認 |
@@ -28,30 +28,59 @@ python3 -m venv .venv
 
 `math --selftest` は保存した例を使い、`math --verify-github` は GitHub の Markdown API に送信して結果を照合します。通信するのは `--verify-github` を指定した場合だけです。
 
-相対リンクの境界は、検査する根が Git の根ならその根、それ以外なら検査する根の親です。境界の外を意図的に指す場合は、検査する根の `tests/doc_external_allow.txt` に `/absolute/path/ ### 2 ### 理由` の形式で、解決後の絶対パスの接頭辞と出現回数の上限を指定します。表の先頭から最初に一致する項目を適用し、リンク先の実在にかかわらず出現ごとに数えます。
-
-ラチェットの上限ファイルは `date_headings 3` のように 1 行に名前と整数を書きます。名前は `date_headings`（`doc/` の日付付き見出し）、`spec_long_lines`（`note/spec.md` の 401 文字以上の行）、`line_refs`（`doc/` の `file.hpp:12` などの行番号参照）の 3 つです。日付付きの経緯は記録へ、仕様は短い決定と参照先へまとめ、コードの参照は位置がずれにくい関数名や変数名で示せます。
-
 ## 設定ファイル
 
 ```toml
 # .mdguard.toml
 [math]
-paths = ["README.md", "doc/*.md", "packages/*.md", ":(exclude,glob)**/log/**"]
+paths = ["README.md", "guides/*.md", "packages/*.md", ":(exclude,glob)**/archive/**"]
+
+[index]
+rules = [
+    { base = "guides", glob = "**/*.md", index = "nearest-readme" },
+    { base = "releases", glob = "*.md", index = "RELEASES.md" },
+]
+
+[links]
+paths = ["README.md", "guides/**/*.md", "reference/**/*.md"]
+exclude = ["guides/archive/**/*.md"]
+external_allow = "checks/external-links.txt"
+
+[ratchet.metrics.dated_headings]
+paths = ["guides/**/*.md"]
+pattern = '^#+ .*20[0-9]{2}-[0-9]{2}-[0-9]{2}'
+count = "lines"
+
+[ratchet.metrics.long_lines]
+paths = ["reference/conventions.md"]
+pattern = '^.{401,}'
+count = "lines"
+
+[ratchet.metrics.source_refs]
+paths = ["guides/**/*.md"]
+pattern = '[A-Za-z0-9_]\.(hpp|cpp|h|cu|py|sh|mk|c):[0-9]+'
+count = "matches"
 
 [run]
 name = "文書"
-exempt = "tests/doc_index_exempt.txt"
-ratchet = "tests/doc_ratchet.txt"
+exempt = "checks/index-exempt.txt"
+ratchet = "checks/limits.txt"
 math_under = "."
-# math_paths = ["README.md", "doc/*.md"]  # run の数式対象だけ上書きする場合
+# math_paths = ["README.md", "guides/*.md"]  # run の数式対象だけ上書きする場合
 ```
 
-- `math.paths` は Git ルート相対の Git pathspec の配列です。通常の `doc/*.md` は `doc/` の深い階層にも一致します。パスの除外にも Git pathspec を使えます。
+- `math.paths` は Git ルート相対の Git pathspec の配列です。通常の `guides/*.md` は `guides/` の深い階層にも一致します。パスの除外にも Git pathspec を使えます。
 - `--under DIR` と `run.math_under` は Git ルート相対のディレクトリを指定します。`.` は設定の対象全体です。`math --repo --list` は Git ルート相対のパスを 1 行ずつ表示し、対象が 0 本なら失敗します。
 - `math --repo` は作業ディレクトリ、文書検査は `ROOT` から Git の根まで上がって最初の `.mdguard.toml` を読みます。Git の外では起点のみを見ます。子の設定に `math.paths` がなければ Git の根の設定を参照します。
 - `--config FILE` はコマンドの前後どちらでも指定でき、そのファイルを使います。設定内の `exempt` と `ratchet` は設定ファイルのあるディレクトリ相対、CLI のファイル引数は呼び出し元のディレクトリ相対です。
-- CLI の値が設定より優先されます。`run` は索引とリンクを常に検査し、上限ファイルと数式の対象ディレクトリがそれぞれ指定された場合に対応する検査も行います。`--exempt -`、`--ratchet -`、`--math-under -` で設定の指定を外せます。
+- CLI の値が設定より優先されます。`run` は索引とリンクの結果を表示し、上限ファイルと数式の対象ディレクトリがそれぞれ指定された場合に対応する検査も行います。`--exempt -`、`--ratchet -`、`--math-under -` で設定の指定を外せます。
+
+文書検査の glob は `ROOT` 相対です。`*` は 1 階層内に、`**/*.md` は直下と下位階層に一致します。ドットで始まる名前も含み、`**` の再帰ではシンボリックリンク先のディレクトリをたどりません。
+
+- `index.rules` の `glob` は `base`（省略時は `ROOT`）を起点にファイルとディレクトリを選びます。`index = "nearest-readme"` は各項目の親から `base` まで最も近い `README.md` を探し、`README.md` 自体は点呼の対象から外します。固定の索引を使う場合は `ROOT` 相対のファイル名を書きます。`hidden = false` で `base` 以下の隠し項目を外し、`label` で `run` の件数表示名を指定できます。既定では索引ルールはありません。
+- `links.paths` を省略すると、Git 内では `ROOT` 配下の追跡済み Markdown、Git 外では `**/*.md` を検査します。明示した glob は作業ツリー上のファイルを選びます。`links.exclude` で対象を外し、`paths = []` で対象を空にできます。
+- リンク先は Git の根、Git 外では `ROOT` を境界とします。境界外への相対リンクを許すには、`links.external_allow` で `ROOT` 相対の許可表を指定し、`/absolute/path/ ### 2 ### 理由` の形式で解決後の絶対パスの接頭辞と出現回数の上限を書きます。先頭から最初に一致する項目を適用し、リンク先の実在にかかわらず出現ごとに数えます。設定または許可表がなければ境界外は許可されません。
+- `ratchet.metrics` で名前ごとに、対象の glob と Python の正規表現を指定します。正規表現は改行を除いた各行に適用します。`count = "lines"`（既定）は一致のある行を 1 回、`"matches"` は重ならない一致を出現ごとに数えます。同じファイルが複数の glob に一致しても各指標で 1 回読みます。`follow_symlinks = true` で glob に一致したファイルへのシンボリックリンクも読みます。既定の指標はありません。ラチェットを実行する場合は指標を定義し、上限ファイルに `dated_headings 3` のように指標名と整数を 1 行ずつ書きます。
 
 ## 数式の規則
 
@@ -79,3 +108,7 @@ M15・M16 はブラウザーでの MathJax 描画時に起きるため、例に�
 ```sh
 .venv/bin/python -m unittest
 ```
+
+## ライセンス
+
+BSD 3-Clause License（[LICENSE](LICENSE)）。
