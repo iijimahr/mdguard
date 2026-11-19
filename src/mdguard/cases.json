@@ -1,0 +1,1375 @@
+{
+  "mode": "gfm",
+  "cases": [
+    {
+      "src": "a $x$ b",
+      "github_ok": true
+    },
+    {
+      "src": "あ$x$い",
+      "github_ok": false
+    },
+    {
+      "src": "a$x$b",
+      "github_ok": false
+    },
+    {
+      "src": "a$x$ b",
+      "github_ok": false
+    },
+    {
+      "src": "a $x$b",
+      "github_ok": false
+    },
+    {
+      "src": "値は $x$、次",
+      "github_ok": true
+    },
+    {
+      "src": "値は$x$、次",
+      "github_ok": false
+    },
+    {
+      "src": "（$x$）",
+      "github_ok": false
+    },
+    {
+      "src": "「$x$」",
+      "github_ok": false
+    },
+    {
+      "src": "$x$。",
+      "github_ok": true
+    },
+    {
+      "src": "$x $ y",
+      "github_ok": false
+    },
+    {
+      "src": "$ x$ y",
+      "github_ok": false
+    },
+    {
+      "src": "$x$1",
+      "github_ok": false
+    },
+    {
+      "src": "1$x$",
+      "github_ok": false
+    },
+    {
+      "src": "a $$x$$ b",
+      "github_ok": true
+    },
+    {
+      "src": "$a_1$ と $b_2$",
+      "github_ok": true
+    },
+    {
+      "src": "$a*b$ と $c*d$",
+      "github_ok": false
+    },
+    {
+      "src": "$\\{x\\}$",
+      "github_ok": false
+    },
+    {
+      "src": "**$x$**",
+      "github_ok": true
+    },
+    {
+      "src": "**太字**$x$",
+      "github_ok": true
+    },
+    {
+      "src": "$a<b$ と $c>d$",
+      "github_ok": true
+    },
+    {
+      "src": "| a | b |\n|---|---|\n| $\\|x\\|$ | $|y|$ |",
+      "github_ok": false
+    },
+    {
+      "src": "$5 と $6",
+      "github_ok": false
+    },
+    {
+      "src": "$x^*$ と $y^*$",
+      "github_ok": false
+    },
+    {
+      "src": "$\\_$ と $a\\,b$",
+      "github_ok": false
+    },
+    {
+      "src": "$\\%$ $\\#$ $\\&$",
+      "github_ok": false
+    },
+    {
+      "src": "$`x_1`$ と $`y*z`$",
+      "github_ok": true
+    },
+    {
+      "src": "$x$ at start",
+      "github_ok": true
+    },
+    {
+      "src": "a $\\sqrt{x}$ b",
+      "github_ok": true
+    },
+    {
+      "src": "$a \\\\ b$",
+      "github_ok": false
+    },
+    {
+      "src": "$[a](b)$",
+      "github_ok": false
+    },
+    {
+      "src": "日本語$x$日本語",
+      "github_ok": false
+    },
+    {
+      "src": "日本語 $x$ 日本語",
+      "github_ok": true
+    },
+    {
+      "src": "a, $x$, b",
+      "github_ok": true
+    },
+    {
+      "src": "a ($x$) b",
+      "github_ok": true
+    },
+    {
+      "src": "a($x$)b",
+      "github_ok": true
+    },
+    {
+      "src": "a ($x$）b",
+      "github_ok": true
+    },
+    {
+      "src": "a （$x$) b",
+      "github_ok": false
+    },
+    {
+      "src": "x「$x$ y",
+      "github_ok": false
+    },
+    {
+      "src": "p $x$）",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$」",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$は",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$-",
+      "github_ok": true
+    },
+    {
+      "src": "-$x$ p",
+      "github_ok": false
+    },
+    {
+      "src": "a\"$x$\"",
+      "github_ok": false
+    },
+    {
+      "src": "a'$x$'",
+      "github_ok": false
+    },
+    {
+      "src": "a/$x$/",
+      "github_ok": false
+    },
+    {
+      "src": "a:$x$",
+      "github_ok": false
+    },
+    {
+      "src": "a=$x$",
+      "github_ok": false
+    },
+    {
+      "src": "p $x$:",
+      "github_ok": true
+    },
+    {
+      "src": "—$x$ p",
+      "github_ok": false
+    },
+    {
+      "src": "、$x$ p",
+      "github_ok": false
+    },
+    {
+      "src": "。$x$ p",
+      "github_ok": false
+    },
+    {
+      "src": "・$x$ p",
+      "github_ok": false
+    },
+    {
+      "src": "→$x$ p",
+      "github_ok": false
+    },
+    {
+      "src": "p $x$→",
+      "github_ok": true
+    },
+    {
+      "src": "×$x$ p",
+      "github_ok": false
+    },
+    {
+      "src": "a~$x$ p",
+      "github_ok": false
+    },
+    {
+      "src": "*$x$* p",
+      "github_ok": false
+    },
+    {
+      "src": "_$x$_ p",
+      "github_ok": false
+    },
+    {
+      "src": "**$x$**の",
+      "github_ok": false
+    },
+    {
+      "src": "a\n$x$ p",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$\nb",
+      "github_ok": true
+    },
+    {
+      "src": "$x$$y$",
+      "github_ok": false
+    },
+    {
+      "src": "$a$b$ c",
+      "github_ok": false
+    },
+    {
+      "src": "$a*b$ alone",
+      "github_ok": true
+    },
+    {
+      "src": "$a*b$ と *c*",
+      "github_ok": true
+    },
+    {
+      "src": "$a * b$ と $c * d$",
+      "github_ok": true
+    },
+    {
+      "src": "$a^*$ alone",
+      "github_ok": true
+    },
+    {
+      "src": "$_a$ と $_b$",
+      "github_ok": true
+    },
+    {
+      "src": "$x_a$ と $_c$ と $y_b$",
+      "github_ok": true
+    },
+    {
+      "src": "$a _b$ と $c_ d$",
+      "github_ok": false
+    },
+    {
+      "src": "$\\!a\\;b\\:c$",
+      "github_ok": false
+    },
+    {
+      "src": "$\\|x\\|$",
+      "github_ok": false
+    },
+    {
+      "src": "$\\$$",
+      "github_ok": false
+    },
+    {
+      "src": "$\\\\{x\\\\}$",
+      "github_ok": false
+    },
+    {
+      "src": "$a\\\\\\\\b$",
+      "github_ok": false
+    },
+    {
+      "src": "p $x$　q",
+      "github_ok": true
+    },
+    {
+      "src": "　$x$ q",
+      "github_ok": false
+    },
+    {
+      "src": "p $x$! q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$… q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$〜 q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$？ q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$）。 q",
+      "github_ok": true
+    },
+    {
+      "src": "$x$ と $$y$$ と $z$",
+      "github_ok": true
+    },
+    {
+      "src": "**値** $x$ と",
+      "github_ok": true
+    },
+    {
+      "src": "$x$**",
+      "github_ok": true
+    },
+    {
+      "src": "a <$x$> b",
+      "github_ok": false
+    },
+    {
+      "src": "p $x$* q",
+      "github_ok": true
+    },
+    {
+      "src": "$$\nx\n$$",
+      "github_ok": true
+    },
+    {
+      "src": "$$\na\n+ b\n$$",
+      "github_ok": false
+    },
+    {
+      "src": "$$\na\n- b\n$$",
+      "github_ok": false
+    },
+    {
+      "src": "$$\na\n* b\n$$",
+      "github_ok": false
+    },
+    {
+      "src": "$$\na\n1. b\n$$",
+      "github_ok": false
+    },
+    {
+      "src": "$$\na\n> b\n$$",
+      "github_ok": false
+    },
+    {
+      "src": "$$\na\n# b\n$$",
+      "github_ok": false
+    },
+    {
+      "src": "$$\na\n\nb\n$$",
+      "github_ok": false
+    },
+    {
+      "src": "$$\na\n---\n$$",
+      "github_ok": false
+    },
+    {
+      "src": "$$\na\n===\n$$",
+      "github_ok": false
+    },
+    {
+      "src": "text\n$$\nx\n$$",
+      "github_ok": false
+    },
+    {
+      "src": "$$\nx\n$$\ntext",
+      "github_ok": false
+    },
+    {
+      "src": "$$x$$",
+      "github_ok": true
+    },
+    {
+      "src": "$$\n\\begin{aligned}\na &= b \\\\\nc &= d\n\\end{aligned}\n$$",
+      "github_ok": true
+    },
+    {
+      "src": "$$\n\\{x\\} \\, y \\% z\n$$",
+      "github_ok": false
+    },
+    {
+      "src": "$$\na*b + c*d\n$$",
+      "github_ok": false
+    },
+    {
+      "src": "$$\na_1 + b_2 \\quad c_{x}^{*} + d_{y}^{*}\n$$",
+      "github_ok": false
+    },
+    {
+      "src": "- item\n\n  $$\n  x\n  $$",
+      "github_ok": false
+    },
+    {
+      "src": "- item\n  $$\n  x\n  $$",
+      "github_ok": false
+    },
+    {
+      "src": "```math\na*b \\{x\\} \\\\\n```",
+      "github_ok": true
+    },
+    {
+      "src": "$$x\ny$$",
+      "github_ok": true
+    },
+    {
+      "src": "$$\n    x\n$$",
+      "github_ok": true
+    },
+    {
+      "src": "$$\nx \\\\\n$$",
+      "github_ok": false
+    },
+    {
+      "src": "$$\n  + b\n$$",
+      "github_ok": false
+    },
+    {
+      "src": "$$\na\n+b\n$$",
+      "github_ok": true
+    },
+    {
+      "src": "$$\na\n+ b = c\n$$ text",
+      "github_ok": false
+    },
+    {
+      "src": "1. item\n   $$\n   a\n   - b\n   $$",
+      "github_ok": false
+    },
+    {
+      "src": "| a |\n|---|\n| $$x$$ |",
+      "github_ok": true
+    },
+    {
+      "src": "$$\na \\\\ b\n$$",
+      "github_ok": false
+    },
+    {
+      "src": "$$\n|x|\n$$",
+      "github_ok": true
+    },
+    {
+      "src": "> $$\n> x\n> $$",
+      "github_ok": true
+    },
+    {
+      "src": "a!$x$ q",
+      "github_ok": false
+    },
+    {
+      "src": "a\"$x$ q",
+      "github_ok": false
+    },
+    {
+      "src": "a#$x$ q",
+      "github_ok": false
+    },
+    {
+      "src": "a$$x$ q",
+      "github_ok": false
+    },
+    {
+      "src": "a%$x$ q",
+      "github_ok": false
+    },
+    {
+      "src": "a&$x$ q",
+      "github_ok": false
+    },
+    {
+      "src": "a'$x$ q",
+      "github_ok": false
+    },
+    {
+      "src": "a($x$ q",
+      "github_ok": true
+    },
+    {
+      "src": "a)$x$ q",
+      "github_ok": false
+    },
+    {
+      "src": "a*$x$ q",
+      "github_ok": false
+    },
+    {
+      "src": "a+$x$ q",
+      "github_ok": false
+    },
+    {
+      "src": "a,$x$ q",
+      "github_ok": false
+    },
+    {
+      "src": "a-$x$ q",
+      "github_ok": false
+    },
+    {
+      "src": "a.$x$ q",
+      "github_ok": false
+    },
+    {
+      "src": "a/$x$ q",
+      "github_ok": false
+    },
+    {
+      "src": "a:$x$ q",
+      "github_ok": false
+    },
+    {
+      "src": "a;$x$ q",
+      "github_ok": false
+    },
+    {
+      "src": "a<$x$ q",
+      "github_ok": false
+    },
+    {
+      "src": "a=$x$ q",
+      "github_ok": false
+    },
+    {
+      "src": "a>$x$ q",
+      "github_ok": false
+    },
+    {
+      "src": "a?$x$ q",
+      "github_ok": false
+    },
+    {
+      "src": "a@$x$ q",
+      "github_ok": false
+    },
+    {
+      "src": "a[$x$ q",
+      "github_ok": false
+    },
+    {
+      "src": "a\\$x$ q",
+      "github_ok": false
+    },
+    {
+      "src": "a]$x$ q",
+      "github_ok": false
+    },
+    {
+      "src": "a^$x$ q",
+      "github_ok": false
+    },
+    {
+      "src": "a_$x$ q",
+      "github_ok": false
+    },
+    {
+      "src": "a`$x$ q",
+      "github_ok": false
+    },
+    {
+      "src": "a{$x$ q",
+      "github_ok": false
+    },
+    {
+      "src": "a|$x$ q",
+      "github_ok": false
+    },
+    {
+      "src": "a}$x$ q",
+      "github_ok": false
+    },
+    {
+      "src": "a~$x$ q",
+      "github_ok": false
+    },
+    {
+      "src": "p $x$!q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$\"q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$#q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$$q",
+      "github_ok": false
+    },
+    {
+      "src": "p $x$%q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$&q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$'q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$(q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$)q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$*q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$+q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$,q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$-q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$.q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$/q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$:q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$;q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$<q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$=q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$>q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$?q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$@q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$[q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$\\q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$]q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$^q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$_q",
+      "github_ok": false
+    },
+    {
+      "src": "p $x$`q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x${q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$|q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$}q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$~q",
+      "github_ok": true
+    },
+    {
+      "src": "a\t$x$ q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$\tq",
+      "github_ok": true
+    },
+    {
+      "src": "`c`$x$ q",
+      "github_ok": true
+    },
+    {
+      "src": "[l](u)$x$ q",
+      "github_ok": true
+    },
+    {
+      "src": "**b**$x$ q",
+      "github_ok": true
+    },
+    {
+      "src": "<b>h</b>$x$ q",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$`c`",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$[l](u)",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$**b**",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$<b>h</b>",
+      "github_ok": true
+    },
+    {
+      "src": "a $x$ q",
+      "github_ok": false
+    },
+    {
+      "src": "p $x$ q",
+      "github_ok": true
+    },
+    {
+      "src": "é$x$ q",
+      "github_ok": false
+    },
+    {
+      "src": "p $x$é",
+      "github_ok": true
+    },
+    {
+      "src": "あ $x$い",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$あ",
+      "github_ok": true
+    },
+    {
+      "src": "p $x$_",
+      "github_ok": false
+    },
+    {
+      "src": "p $$x$$い",
+      "github_ok": true
+    },
+    {
+      "src": "あ$$x$$ q",
+      "github_ok": false
+    },
+    {
+      "src": "あ $$x$$ q",
+      "github_ok": true
+    },
+    {
+      "src": "$$\na \\\\\nb \\\\\nc\n$$",
+      "github_ok": true
+    },
+    {
+      "src": "$$\na \\\\ b \\\\\nc\n$$",
+      "github_ok": false
+    },
+    {
+      "src": "$$\n\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}\n$$",
+      "github_ok": false
+    },
+    {
+      "src": "$\\begin{pmatrix}a\\\\b\\end{pmatrix}$ q",
+      "github_ok": false
+    },
+    {
+      "src": "$$\na \\\\\n$$",
+      "github_ok": false
+    },
+    {
+      "src": "$$\na\\,b \\;c \\!d \\|e\\| \\_f \\#g \\$h \\&i \\%j \\{k\\} \\^l \\~m \\<n \\>o \\[p\\] \\(q\\) \\.r \\'s \\`t\n$$",
+      "github_ok": false
+    },
+    {
+      "src": "$\\,a \\;b \\!c \\^d \\~e \\.f \\'g \\[h\\] \\(i\\) \\-j \\/k \\@l \\=m \\\"n \\?o \\+p \\*q$",
+      "github_ok": false
+    },
+    {
+      "src": "# 見出し\n$$\nx\n$$",
+      "github_ok": true
+    },
+    {
+      "src": "text\n\n$$\nx\n$$\n\ntext",
+      "github_ok": true
+    },
+    {
+      "src": "text\n$$x$$\ntext",
+      "github_ok": true
+    },
+    {
+      "src": "- a\n\n$$\nx\n$$",
+      "github_ok": true
+    },
+    {
+      "src": "$$\nx\n$$\n- a",
+      "github_ok": true
+    },
+    {
+      "src": "  $$\n  x\n  $$",
+      "github_ok": true
+    },
+    {
+      "src": "$$\na*b\n$$",
+      "github_ok": true
+    },
+    {
+      "src": "$$\na*b\n$$\n\n*c*",
+      "github_ok": true
+    },
+    {
+      "src": "$$\na^* + b^*\n$$",
+      "github_ok": true
+    },
+    {
+      "src": "$$\na_{*} + b_{*}\n$$",
+      "github_ok": false
+    },
+    {
+      "src": "$$\na \\ast b \\ast c\n$$",
+      "github_ok": true
+    },
+    {
+      "src": "$$\na_ b + c _d\n$$",
+      "github_ok": true
+    },
+    {
+      "src": "$a^*$ と $b^*$ と",
+      "github_ok": false
+    },
+    {
+      "src": "$a^{*}$ と $b^{*}$",
+      "github_ok": false
+    },
+    {
+      "src": "$x$ と *y*",
+      "github_ok": true
+    },
+    {
+      "src": "*y* と $a*b$",
+      "github_ok": true
+    },
+    {
+      "src": "$a*b$ *c*",
+      "github_ok": true
+    },
+    {
+      "src": "$a**b$ と $c**d$",
+      "github_ok": false
+    },
+    {
+      "src": "$$\n<x>\n$$",
+      "github_ok": false
+    },
+    {
+      "src": "- a $x$ b",
+      "github_ok": true
+    },
+    {
+      "src": "- $$x$$",
+      "github_ok": true
+    },
+    {
+      "src": "- item\n\n  $$x$$",
+      "github_ok": true
+    },
+    {
+      "src": "- item\n\n  ```math\n  x\n  ```",
+      "github_ok": true
+    },
+    {
+      "src": "- item\n  $$\n  x\n  $$\n- next",
+      "github_ok": false
+    },
+    {
+      "src": "1. item\n\n   $$\n   x\n   $$\n\n2. b",
+      "github_ok": false
+    },
+    {
+      "src": "- $$\n  x\n  $$",
+      "github_ok": false
+    },
+    {
+      "src": "> - $$\n>   x\n>   $$",
+      "github_ok": false
+    },
+    {
+      "src": "- item\n\n  $$ x\n  y $$",
+      "github_ok": false
+    },
+    {
+      "src": "a $$x\ny$$ b",
+      "github_ok": false
+    },
+    {
+      "src": "$$x\ny$$ b",
+      "github_ok": false
+    },
+    {
+      "src": "a $$x\ny$$",
+      "github_ok": false
+    },
+    {
+      "src": "a\n$$x\ny$$",
+      "github_ok": false
+    },
+    {
+      "src": "$x\ny$ b",
+      "github_ok": false
+    },
+    {
+      "src": "a $x\ny$ b",
+      "github_ok": false
+    },
+    {
+      "src": "$$\nx\n$$\n\n$$\ny\n$$",
+      "github_ok": true
+    },
+    {
+      "src": "$$\nx\n$$\n$$\ny\n$$",
+      "github_ok": true
+    },
+    {
+      "src": "| a |\n|---|\n| $a<b$ $c>d$ $\\{x\\}$ |",
+      "github_ok": false
+    },
+    {
+      "src": "$\\lbrace x \\rbrace \\Vert y \\Vert \\vert z \\vert a \\lt b$",
+      "github_ok": true
+    },
+    {
+      "src": "$$\n\\begin{cases} a & x>0 \\\\\n b & x<0 \\end{cases}\n$$",
+      "github_ok": true
+    },
+    {
+      "src": "$$\na<b, c>d\n$$",
+      "github_ok": true
+    },
+    {
+      "src": "$x<y$ q",
+      "github_ok": true
+    },
+    {
+      "src": "$y>z$ q",
+      "github_ok": true
+    },
+    {
+      "src": "$x<y$ と $y>z$",
+      "github_ok": true
+    },
+    {
+      "src": "$x < y$ と $y > z$",
+      "github_ok": true
+    },
+    {
+      "src": "$x<y$ and $y>z$",
+      "github_ok": true
+    },
+    {
+      "src": "$a<b, c>d$",
+      "github_ok": true
+    },
+    {
+      "src": "$\\operatorname{d}\\!x$ と $\\$100$",
+      "github_ok": false
+    },
+    {
+      "src": "**$x$ と $y$**",
+      "github_ok": true
+    },
+    {
+      "src": "*$x$*",
+      "github_ok": false
+    },
+    {
+      "src": "*値 $x$*",
+      "github_ok": false
+    },
+    {
+      "src": "_$x$_",
+      "github_ok": false
+    },
+    {
+      "src": "~~$x$~~",
+      "github_ok": true
+    },
+    {
+      "src": "[$x$](u)",
+      "github_ok": false
+    },
+    {
+      "src": "[値 $x$](u)",
+      "github_ok": false
+    },
+    {
+      "src": "**値は$x$**",
+      "github_ok": false
+    },
+    {
+      "src": "**値は $x$**",
+      "github_ok": true
+    },
+    {
+      "src": "$x$\\\ny",
+      "github_ok": true
+    },
+    {
+      "src": "$`a<b>c \\{x\\} | y`$ q",
+      "github_ok": true
+    },
+    {
+      "src": "| a |\n|---|\n| $`|x|`$ |",
+      "github_ok": false
+    },
+    {
+      "src": "$`x` y$",
+      "github_ok": false
+    },
+    {
+      "src": "$`a`$と",
+      "github_ok": true
+    },
+    {
+      "src": "あ$`a`$ q",
+      "github_ok": true
+    },
+    {
+      "src": "あ $`a`$い",
+      "github_ok": true
+    },
+    {
+      "src": "$`a`$1",
+      "github_ok": true
+    },
+    {
+      "src": "$$\na \\lt b \\gt c\n$$",
+      "github_ok": true
+    },
+    {
+      "src": "$$\na <b> c\n$$",
+      "github_ok": false
+    },
+    {
+      "src": "$a<b>c$",
+      "github_ok": false
+    },
+    {
+      "src": "角度の**$\\phi$ 方向の半幅**",
+      "github_ok": false
+    },
+    {
+      "src": "角度の **$\\phi$ 方向の半幅**",
+      "github_ok": true
+    },
+    {
+      "src": "（$1\\le$`th`$\\le2$）",
+      "github_ok": false
+    },
+    {
+      "src": "幅（$1\\le$ `th` $\\le2$）",
+      "github_ok": false
+    },
+    {
+      "src": "相対誤差は $10^{-14}$、$a+b^++b^-$ の保存",
+      "github_ok": false
+    },
+    {
+      "src": "速度/$c$ |",
+      "github_ok": false
+    },
+    {
+      "src": "| a |\n|---|\n| 速度/$c$ |",
+      "github_ok": false
+    },
+    {
+      "src": "$\\max|\\boldsymbol{J}|$ q",
+      "github_ok": true
+    },
+    {
+      "src": "$A\\,w = $ 一定",
+      "github_ok": false
+    },
+    {
+      "src": "幅 $\\Delta\\phi$・$\\theta$ q",
+      "github_ok": false
+    },
+    {
+      "src": "幅 $\\Delta\\phi$ ・ $\\theta$ q",
+      "github_ok": true
+    },
+    {
+      "src": "10 m$^2$ q",
+      "github_ok": false
+    },
+    {
+      "src": "$v_\\theta, v_\\phi$ の揺らぎ（$\\delta v$）",
+      "github_ok": false
+    },
+    {
+      "src": "$w^{a}_{b} + w^{c}_{d}$ q",
+      "github_ok": false
+    },
+    {
+      "src": "$$\nf\\bigg|_{\\rm N} = -c\\,\\frac{T - T_{\\rm ref}}{\\tau}\n$$",
+      "github_ok": false
+    },
+    {
+      "src": "$$\n\\underbrace{a > b}_{\\text{x}}\\ \\to\\ \\text{y}\n$$",
+      "github_ok": true
+    },
+    {
+      "src": "q $(D_rG_r)_0 = \\frac{1}{12}\\left(G_{r,-2} - 8G_{r,-1}\\right)$ q",
+      "github_ok": false
+    },
+    {
+      "src": "q $\\nabla\\cdot(B_\\psi\\hat{e}_\\psi)=B_\\psi'(\\hat{e}_\\psi)$ q",
+      "github_ok": false
+    },
+    {
+      "src": "q $w_{b}^{a} + w_{d}^{c}$ q",
+      "github_ok": true
+    },
+    {
+      "src": "q $`w^{a}_{b} + w^{c}_{d}`$ q",
+      "github_ok": true
+    },
+    {
+      "src": "q $\\kappa^*$ とし $[\\ell_b^-, \\ell_b^+]$ の $\\kappa^*$ q",
+      "github_ok": false
+    },
+    {
+      "src": "q $\\kappa^\\ast$ とし $\\kappa^\\ast$ q",
+      "github_ok": true
+    },
+    {
+      "src": "text\n```math\nx \\; y\n```\ntext",
+      "github_ok": true
+    },
+    {
+      "src": "- item\n  ```math\n  x\n  ```\n- next",
+      "github_ok": true
+    },
+    {
+      "src": "> q\n> ```math\n> x\n> ```",
+      "github_ok": true
+    },
+    {
+      "src": "1. a\n\n   ```math\n   a\n   - b\n   ```",
+      "github_ok": true
+    },
+    {
+      "src": "- **$\\ell$ の値は「 $n_r$=32 での値」** という q",
+      "github_ok": true
+    },
+    {
+      "src": "- **$\\ell$ の値は「 $n_r$=32 での値」**という q",
+      "github_ok": false
+    },
+    {
+      "src": "q **$t=100$（定常）** での q",
+      "github_ok": true
+    },
+    {
+      "src": "（ $1\\le$ `th` $\\le2$）",
+      "github_ok": true
+    },
+    {
+      "src": "| a |\n|---|\n| $\\vert x\\vert$ |",
+      "github_ok": true
+    },
+    {
+      "src": "量$`_\\perp = -`$比$`_\\perp/f`$ q",
+      "github_ok": true
+    },
+    {
+      "src": "q $w^{a}_ {b} + w^{c}_ {d}$ q",
+      "github_ok": true
+    },
+    {
+      "src": "q $(D_rG_r)_ 0 = G_{r,-2}$ q",
+      "github_ok": true
+    },
+    {
+      "src": "$$\nf\\bigg|_ {\\rm N} = -c\\thinspace\\frac{T - T_{\\rm ref}}{\\tau}\n$$",
+      "github_ok": true
+    },
+    {
+      "src": "$$\na\n{}+ b\n$$",
+      "github_ok": true
+    },
+    {
+      "src": "$$\na\n{}- b\n$$",
+      "github_ok": true
+    },
+    {
+      "src": "$$\na +\nb\n$$",
+      "github_ok": true
+    },
+    {
+      "src": "- item\n\n  $$a + b = c$$",
+      "github_ok": true
+    },
+    {
+      "src": "- item\n  $$a + b = c$$\n- next",
+      "github_ok": true
+    },
+    {
+      "src": "$$\n\\begin{cases} a & x \\\\\n b & y \\end{cases}\n$$",
+      "github_ok": true
+    },
+    {
+      "src": "q $a\\mskip5mu b$ q",
+      "github_ok": true
+    },
+    {
+      "src": "$$\na\\mskip5mu b\n$$",
+      "github_ok": true
+    },
+    {
+      "src": "$$\na\n+\nb\n$$",
+      "github_ok": true
+    },
+    {
+      "src": "$$\na\n-\nb\n$$",
+      "github_ok": false
+    },
+    {
+      "src": "$$\na\n=\nb\n$$",
+      "github_ok": false
+    },
+    {
+      "src": "$$\na\n*\nb\n$$",
+      "github_ok": true
+    },
+    {
+      "src": "$$\na\n{}=\nb\n$$",
+      "github_ok": true
+    },
+    {
+      "src": "$$\nu=\n\\sum_a\n+\nT\n$$\n$$\nv=\n\\sum_b\n$$",
+      "github_ok": true
+    },
+    {
+      "src": "- **C (2020)**: text\n\n  $$\n  x\n  $$",
+      "github_ok": false
+    },
+    {
+      "src": "- a\n\n  $$\\begin{cases} a \\\\ b \\end{cases}$$",
+      "github_ok": false
+    },
+    {
+      "src": "q $27$% と $\\Delta r/r\\le1.4$% q",
+      "github_ok": true
+    },
+    {
+      "src": "q $\\text{max_size}\\thinspace\\Delta$ q",
+      "github_ok": false,
+      "api_blind": true
+    },
+    {
+      "src": "q $\\texttt{min_size}\\cdot e$ q",
+      "github_ok": false,
+      "api_blind": true
+    },
+    {
+      "src": "$$N=I-\\operatorname{diag}(s_k^2)$$",
+      "github_ok": false,
+      "api_blind": true
+    },
+    {
+      "src": "q $\\operatorname{rank}_D\\mathcal E$ q",
+      "github_ok": false,
+      "api_blind": true
+    },
+    {
+      "src": "$$\nC_\\eta=\\texttt{time_step}\\ (\\text{既定 }2.5)\n$$",
+      "github_ok": false,
+      "api_blind": true
+    },
+    {
+      "src": "q $\\text{max_size}\\cdot\\Delta$ q",
+      "github_ok": false,
+      "api_blind": true
+    },
+    {
+      "src": "$$a\\thickspace b$$",
+      "github_ok": false,
+      "api_blind": true
+    },
+    {
+      "src": "$$a\\mkern5mu b$$",
+      "github_ok": false,
+      "api_blind": true
+    },
+    {
+      "src": "$$a\\medspace b$$",
+      "github_ok": false,
+      "api_blind": true
+    },
+    {
+      "src": "$$a\\mskip5mu b$$",
+      "github_ok": true,
+      "api_blind": true
+    }
+  ]
+}
