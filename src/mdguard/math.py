@@ -36,6 +36,8 @@ M15・M16 は Markdown の後の MathJax の段で起きる。例の表で api_b
       \\rule を使って下線の代わりにしても表示されない。
   M16 `\\text{…}`・`\\texttt{…}` の中の `_` `^`（GitHub の MathJax ではエラー「'_' allowed only in math mode」）。
       `\\_` は Markdown が `\\` を食べるので、コードの名前は数式の外へ（インラインコード）
+  M17 ASCII の制御文字（U+0000–U+001F のうち TAB・LF・CR 以外と U+007F）。数式の内外を問わない。
+      U+0007・U+0008・U+000B・U+000C は raw でない文字列に書いた `\\a` `\\b` `\\v` `\\f` の跡のことが多い
 """
 import html
 import json
@@ -68,6 +70,8 @@ RE_MENTION = re.compile(r"(?<![A-Za-z0-9])@[A-Za-z0-9]")
 DISALLOWED = {"operatorname", "thickspace", "mkern", "medspace"}   # GitHub の MathJax が許さない（目視で確かめたものだけ足す。\\mskip は可）
 RE_MACRO = re.compile(r"\\([A-Za-z]+)")
 RE_TEXTMODE = re.compile(r"\\(?:text|texttt|textrm|textbf|textit|textsf|mbox)\{([^{}]*)\}")
+RE_CTRL = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")   # TAB・LF・CR は除く
+CTRL_ESC = {"\a": "a", "\b": "b", "\v": "v", "\f": "f"}
 
 
 @dataclass
@@ -403,6 +407,12 @@ def lint_text(src):
     math_fences = []
     info = split_lines(lines, math_fences)
     out, paras = [], []
+    for i, ln in enumerate(lines):
+        for m in RE_CTRL.finditer(ln):
+            c = m.group()
+            esc = CTRL_ESC.get(c)
+            out.append(Finding(i + 1, m.start() + 1, "M17", f"制御文字 U+{ord(c):04X} がある"
+                               + (f"（raw でない文字列の `\\{esc}` がエスケープとして効いた跡かも。→ `\\\\{esc}` か r\"…\" に）" if esc else "")))
     used = [False] * len(lines)
     n = len(lines)
     # ブロック数式（$$ で始まり、同じ行で閉じない）
