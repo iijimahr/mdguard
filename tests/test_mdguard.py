@@ -23,6 +23,23 @@ class MathTests(unittest.TestCase):
             with self.subTest(src=case["src"]):
                 self.assertEqual(not lint_text(case["src"])[0], case["github_ok"])
 
+    def test_control_characters(self):
+        def found(src):
+            return [(f.line, f.col, f.rule, f.msg) for f in lint_text(src)[0]]
+
+        bel = found("a $\\frac\x07lpha$ b\n")   # raw でない "\alpha" の跡（数式の中）
+        self.assertEqual([x[:3] for x in bel], [(1, 9, "M17")])
+        self.assertIn("U+0007", bel[0][3])
+        self.assertIn("`\\a`", bel[0][3])
+        bs = found("x\n\x08eta の値\n")   # 数式の外
+        self.assertEqual([x[:3] for x in bs], [(2, 1, "M17")])
+        self.assertIn("U+0008", bs[0][3])
+        self.assertIn("`\\b`", bs[0][3])
+        self.assertNotIn("raw", found("a\x1fb\n")[0][3])
+        self.assertEqual([x[:3] for x in found("a\x7f $x$ \x00\n")], [(1, 2, "M17"), (1, 8, "M17")])
+        self.assertEqual(found("a\t$x$\tb\n\tc\n"), [])   # TAB は可
+        self.assertEqual(found("a $x$ b\r\n\r\n$$\r\ny\r\n$$\r\n"), [])   # CRLF は可
+
     def test_github_requires_opt_in(self):
         with patch("mdguard.math.render_github") as render, patch("sys.stdout"):
             self.assertEqual(run_cases(live=False), 0)
