@@ -38,6 +38,7 @@ M15・M16 は Markdown の後の MathJax の段で起きる。例の表で api_b
       `\\_` は Markdown が `\\` を食べるので、コードの名前は数式の外へ（インラインコード）
   M18 表の右寄せ（`---:`）・中央寄せ（`:---:`）の列にあるインライン数式。
       iOS Safari で先頭の 1 字ほどしか表示されない（API の出力は正常で、ブラウザーの描画で欠ける）。
+      中身が 1 字（`$x$` など）なら欠ける部分が無いので報告しない。
       → 数式を含む列は左寄せ（`---`）にする
   M17 ASCII の制御文字（U+0000–U+001F のうち TAB・LF・CR 以外と U+007F）。数式の内外を問わない。
       U+0007・U+0008・U+000B・U+000C は raw でない文字列に書いた `\\a` `\\b` `\\v` `\\f` の跡のことが多い。
@@ -568,7 +569,8 @@ def lint_text(src):
             cols = aligns.get(p.rows[0][0]) if kind == "table" else None
             for s in sp if cols else ():
                 k = column_of(p.text, s.start)
-                if s.kind == "inline" and 0 <= k < len(cols) and cols[k] in ("right", "center"):
+                one = len(s.src.strip("$")) == 1   # `$x$` のように 1 字なら欠けない
+                if s.kind == "inline" and not one and 0 <= k < len(cols) and cols[k] in ("right", "center"):
                     ln, col = p.where(s.start)
                     word = "右寄せ" if cols[k] == "right" else "中央寄せ"
                     found.append(Finding(ln, col, "M18", f"{word}の列の数式は iOS Safari で先頭しか表示されない（→ 列を左寄せ `---` に）"))

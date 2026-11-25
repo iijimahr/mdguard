@@ -1394,6 +1394,11 @@
       "src": "| a | b |\n| --- | ---: |\n| X1 | $t=2.04$ での位置 |",
       "github_ok": false,
       "api_blind": true
+    },
+    {
+      "src": "| a | b |\n| --- | ---: |\n| R5 | $x$ |",
+      "github_ok": true,
+      "api_blind": true
     }
   ]
 }
