@@ -39,6 +39,16 @@ class MathTests(unittest.TestCase):
         self.assertEqual([x[:3] for x in found("a\x7f $x$ \x00\n")], [(1, 2, "M17"), (1, 8, "M17")])
         self.assertEqual(found("a\t$x$\tb\n\tc\n"), [])   # TAB は可
         self.assertEqual(found("a $x$ b\r\n\r\n$$\r\ny\r\n$$\r\n"), [])   # CRLF は可
+        # raw でない "\tanh"・"\thinspace"・"\rho"・"\rvert" の跡（TAB・CR にマクロの残りが続く）
+        tab = found("$1 - \tanh x$ と $a\thinspace b$\n")
+        self.assertEqual([x[:3] for x in tab], [(1, 6, "M17"), (1, 18, "M17")])
+        self.assertIn("U+0009", tab[0][3])
+        self.assertIn("`\\t`", tab[0][3])
+        cr = found("$a\rho$ と $\\lvert k\rvert$\n")
+        self.assertEqual([x[:3] for x in cr], [(1, 3, "M17"), (1, 19, "M17")])
+        self.assertIn("`\\r`", cr[0][3])
+        self.assertEqual([x[:3] for x in found("a\rb\n")], [(1, 2, "M17")])   # 行末でない CR
+        self.assertEqual(found("\ttext を字下げ\n|\ta\t|\n"), [])   # 字下げ・区切りの TAB で、マクロの残りが続かないもの
 
     def test_github_requires_opt_in(self):
         with patch("mdguard.math.render_github") as render, patch("sys.stdout"):
