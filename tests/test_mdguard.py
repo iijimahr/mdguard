@@ -18,10 +18,22 @@ class MathTests(unittest.TestCase):
         example_table = Path(__file__).with_name("cases.json").read_text(encoding="utf-8")
         self.assertEqual(example_table, files("mdguard").joinpath("cases.json").read_text(encoding="utf-8"))
         data = json.loads(example_table)
-        self.assertEqual(len(data["cases"]), 340)
+        self.assertEqual(len(data["cases"]), 345)
         for case in data["cases"]:
             with self.subTest(src=case["src"]):
                 self.assertEqual(not lint_text(case["src"])[0], case["github_ok"])
+
+    def test_aligned_table_columns(self):
+        def found(src):
+            return [(f.line, f.col, f.rule) for f in lint_text(src)[0]]
+
+        src = "| $t=2.04$ での位置 | b | c |\n| ---: | --- | :---: |\n| $x$ | $y$ | 左（ $z$ ） |\n"
+        self.assertEqual(found(src), [(1, 3, "M18"), (3, 3, "M18"), (3, 18, "M18")])
+        # 左寄せ・既定の列は報告しない。`\\|` はセルを割らない
+        self.assertEqual(found("| a | b |\n| :--- | --- |\n| $x$ | $y$ |\n"), [])
+        self.assertEqual(found("| a\\|b | c |\n| --- | ---: |\n| q | $y$ |\n"), [(3, 7, "M18")])
+        # 区切り行の無い `|` 始まりの行は表として扱わない
+        self.assertEqual(found("| $x$ |\n"), [])
 
     def test_control_characters(self):
         def found(src):

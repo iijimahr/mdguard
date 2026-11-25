@@ -36,6 +36,9 @@ M15・M16 は Markdown の後の MathJax の段で起きる。例の表で api_b
       \\rule を使って下線の代わりにしても表示されない。
   M16 `\\text{…}`・`\\texttt{…}` の中の `_` `^`（GitHub の MathJax ではエラー「'_' allowed only in math mode」）。
       `\\_` は Markdown が `\\` を食べるので、コードの名前は数式の外へ（インラインコード）
+  M18 表の右寄せ（`---:`）・中央寄せ（`:---:`）の列にあるインライン数式。
+      iOS Safari で先頭の 1 字ほどしか表示されない（API の出力は正常で、ブラウザーの描画で欠ける）。
+      → 数式を含む列は左寄せ（`---`）にする
   M17 ASCII の制御文字（U+0000–U+001F のうち TAB・LF・CR 以外と U+007F）。数式の内外を問わない。
       U+0007・U+0008・U+000B・U+000C は raw でない文字列に書いた `\\a` `\\b` `\\v` `\\f` の跡のことが多い。
       TAB・CR は、マクロの残り（`anh` `heta` `hinspace` `ext…` など、`ho` `ight` `vert` など）が続くとき
@@ -67,6 +70,7 @@ RE_HEADING = re.compile(r"^#{1,6}(\s|$)")
 RE_BLOCKISH = re.compile(r"^(?:(?:[-+*]|\d+[.)])[ \t]+\S|>|#{1,6}(?:\s|$)|=+\s*$|-+\s*$)")
 RE_QUOTE = re.compile(r"^[ \t]*(?:>[ \t]?)*[ \t]*")
 RE_TAG = re.compile(r"<(?:[A-Za-z][A-Za-z0-9-]*(?:\s[^<>]*)?/?|/[A-Za-z][A-Za-z0-9-]*\s*)>")
+RE_DELIM_CELL = re.compile(r"^\s*(:?)-+(:?)\s*$")
 RE_LINK = re.compile(r"\[[^\]]*\]\(")
 RE_MENTION = re.compile(r"(?<![A-Za-z0-9])@[A-Za-z0-9]")
 DISALLOWED = {"operatorname", "thickspace", "mkern", "medspace"}   # GitHub の MathJax が許さない（目視で確かめたものだけ足す。\\mskip は可）
@@ -409,10 +413,71 @@ def split_lines(lines, math_fences):
     return info
 
 
+def split_cells(row):
+    """表の行を `|` で切る。`\\|` はセルを割らない（コードスパンの中の `|` は割る）。"""
+    cells, cur, i = [], "", 0
+    while i < len(row):
+        if row[i] == "\\" and i + 1 < len(row) and row[i + 1] == "|":
+            cur += row[i:i + 2]
+            i += 2
+            continue
+        if row[i] == "|":
+            cells.append(cur)
+            cur = ""
+        else:
+            cur += row[i]
+        i += 1
+    cells.append(cur)
+    s = row.strip()
+    if s.startswith("|"):
+        cells = cells[1:]
+    if s.endswith("|") and not s.endswith("\\|"):
+        cells = cells[:-1]
+    return cells
+
+
+def table_aligns(info):
+    """表の各行（区切り行を除く）について、列ごとの寄せ（"left"・"right"・"center"・None）を返す。"""
+    aligns = {}
+    n = len(info)
+    i = 0
+    while i < n:
+        if info[i][0] != "table":
+            i += 1
+            continue
+        j = i
+        while j < n and info[j][0] == "table":
+            j += 1
+        if j - i >= 2:
+            delim = [RE_DELIM_CELL.match(c) for c in split_cells(info[i + 1][2])]
+            if delim and all(delim):
+                cols = [{("", ""): None, (":", ""): "left", ("", ":"): "right", (":", ":"): "center"}[m.groups()]
+                        for m in delim]
+                for k in range(i, j):
+                    if k != i + 1:
+                        aligns[k] = cols
+        i = j
+    return aligns
+
+
+def column_of(text, pos):
+    """表の行の pos が何列目か（0 始まり）。先頭の `|` の前なら -1。"""
+    count, i = 0, 0
+    while i < pos:
+        if text[i] == "\\" and i + 1 < len(text) and text[i + 1] == "|":
+            i += 2
+            continue
+        if text[i] == "|":
+            count += 1
+        i += 1
+    return count - 1 if text.lstrip().startswith("|") else count
+
+
 def lint_text(src):
     lines = src.split("\n")
     math_fences = []
     info = split_lines(lines, math_fences)
+    aligns = table_aligns(info)
     out, paras = [], []
     for i, ln in enumerate(lines):
         for m in RE_CTRL.finditer(ln):
@@ -500,6 +565,13 @@ def lint_text(src):
             sp = lint_display(p, found)
         else:
             sp = lint_inline(p, kind == "table", found)
+            cols = aligns.get(p.rows[0][0]) if kind == "table" else None
+            for s in sp if cols else ():
+                k = column_of(p.text, s.start)
+                if s.kind == "inline" and 0 <= k < len(cols) and cols[k] in ("right", "center"):
+                    ln, col = p.where(s.start)
+                    word = "右寄せ" if cols[k] == "right" else "中央寄せ"
+                    found.append(Finding(ln, col, "M18", f"{word}の列の数式は iOS Safari で先頭しか表示されない（→ 列を左寄せ `---` に）"))
         for s in sp:
             s.pos, s.endpos = p.where(s.start), p.where(s.end)
             spans.append((s.pos, s))

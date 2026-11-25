@@ -1370,6 +1370,30 @@
       "src": "$$a\\mskip5mu b$$",
       "github_ok": true,
       "api_blind": true
+    },
+    {
+      "src": "| a | b |\n| --- | --- |\n| T1 | $\\xi<0$ |",
+      "github_ok": true
+    },
+    {
+      "src": "| a | b |\n| --- | ---: |\n| R1 | $\\xi<0$ |",
+      "github_ok": false,
+      "api_blind": true
+    },
+    {
+      "src": "| a | b |\n| --- | ---: |\n| R2 | $t=2.04$ |",
+      "github_ok": false,
+      "api_blind": true
+    },
+    {
+      "src": "| a | b |\n| --- | :---: |\n| C1 | $\\xi<0$ |",
+      "github_ok": false,
+      "api_blind": true
+    },
+    {
+      "src": "| a | b |\n| --- | ---: |\n| X1 | $t=2.04$ での位置 |",
+      "github_ok": false,
+      "api_blind": true
     }
   ]
 }
