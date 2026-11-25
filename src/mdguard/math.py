@@ -37,7 +37,9 @@ M15・M16 は Markdown の後の MathJax の段で起きる。例の表で api_b
   M16 `\\text{…}`・`\\texttt{…}` の中の `_` `^`（GitHub の MathJax ではエラー「'_' allowed only in math mode」）。
       `\\_` は Markdown が `\\` を食べるので、コードの名前は数式の外へ（インラインコード）
   M17 ASCII の制御文字（U+0000–U+001F のうち TAB・LF・CR 以外と U+007F）。数式の内外を問わない。
-      U+0007・U+0008・U+000B・U+000C は raw でない文字列に書いた `\\a` `\\b` `\\v` `\\f` の跡のことが多い
+      U+0007・U+0008・U+000B・U+000C は raw でない文字列に書いた `\\a` `\\b` `\\v` `\\f` の跡のことが多い。
+      TAB・CR は、マクロの残り（`anh` `heta` `hinspace` `ext…` など、`ho` `ight` `vert` など）が続くとき
+      （`\\t` `\\r` の跡）と、行末でない CR（CRLF の一部でない）だけ報告する
 """
 import html
 import json
@@ -72,6 +74,11 @@ RE_MACRO = re.compile(r"\\([A-Za-z]+)")
 RE_TEXTMODE = re.compile(r"\\(?:text|texttt|textrm|textbf|textit|textsf|mbox)\{([^{}]*)\}")
 RE_CTRL = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")   # TAB・LF・CR は除く
 CTRL_ESC = {"\a": "a", "\b": "b", "\v": "v", "\f": "f"}
+# TAB・CR は普通の文書にもある（字下げ・CRLF）ので、LaTeX のマクロの残りが続くときだけ報告する。
+# raw でない文字列の "\tanh"・"\theta"・"\thinspace"・"\text"、"\rho"・"\right"・"\rvert" の跡
+RE_TAB_MACRO = re.compile(r"\t(?=(?:ext(?:bf|rm|it|sf|tt|style|normal|up)?|frac|binom|anh?|au|heta|hinspace|hickspace|imes|ilde|o|op|riangle[a-z]*)(?![A-Za-z]))")
+RE_CR_MACRO = re.compile(r"\r(?=(?:ho|ight[a-z]*|vert|Vert|angle|brace|brack|ceil|floor|m|aisebox)(?![A-Za-z]))")
+RE_LONE_CR = re.compile(r"\r(?!$)")   # 行末（CRLF の CR）でない CR
 
 
 @dataclass
@@ -413,6 +420,15 @@ def lint_text(src):
             esc = CTRL_ESC.get(c)
             out.append(Finding(i + 1, m.start() + 1, "M17", f"制御文字 U+{ord(c):04X} がある"
                                + (f"（raw でない文字列の `\\{esc}` がエスケープとして効いた跡かも。→ `\\\\{esc}` か r\"…\" に）" if esc else "")))
+        hits = {m.start(): "t" for m in RE_TAB_MACRO.finditer(ln)}
+        hits.update({m.start(): "r" for m in RE_CR_MACRO.finditer(ln)})
+        for m in RE_LONE_CR.finditer(ln):
+            hits.setdefault(m.start(), "")
+        for col, esc in sorted(hits.items()):
+            c = ln[col]
+            out.append(Finding(i + 1, col + 1, "M17", f"制御文字 U+{ord(c):04X} がある"
+                               + (f"（raw でない文字列の `\\{esc}` がエスケープとして効いた跡かも。→ `\\\\{esc}` か r\"…\" に）" if esc
+                                  else "（行末でない CR）")))
     used = [False] * len(lines)
     n = len(lines)
     # ブロック数式（$$ で始まり、同じ行で閉じない）
@@ -564,7 +580,10 @@ def check(inputs, *, ignore='', select='', summary=False):
     unread = 0
     for name, path in inputs:
         try:
-            src = sys.stdin.read() if path is None else path.read_text(encoding="utf-8")
+            # CRLF だけを LF にする。read_text の改行の変換は単独の CR も改行にするので、
+            # raw でない "\rho" などの跡（行の途中の CR）が M17 で見つからなくなる
+            raw = sys.stdin.buffer.read() if path is None else path.read_bytes()
+            src = raw.decode("utf-8").replace("\r\n", "\n")
         except (OSError, UnicodeDecodeError) as e:
             print(f"{name}: 読めない（{e}）", file=sys.stderr)
             unread += 1  # ★ 読めないファイルも不合格（黙って飛ばすと検査が消える）
